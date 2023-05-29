@@ -40,16 +40,15 @@ class ChartsFragment : Fragment(R.layout.fragment_charts) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getStats().observe(viewLifecycleOwner) {
+
             val bars = arguments?.getIntArray(ARG_Bar)?.map { it }
 
-            val date = arguments?.getStringArray(ARG_Date)?.map { convertDateFormat(it) }
+            val date = arguments?.getStringArray(ARG_Date)?.map { (it) }
 
             setUpCharts(bars, date)
-        }
     }
 
-    private fun setUpCharts(data: List<Int>?, date: List<String>?, rangeTitle:String? = null) {
+    private fun setUpCharts(data: List<Int>?, date: List<String>?) {
         val seriesElement =
             AASeriesElement().name("").showInLegend(false).data(data!!.toTypedArray())
 

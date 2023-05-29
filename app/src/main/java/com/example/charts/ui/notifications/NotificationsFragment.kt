@@ -1,48 +1,35 @@
 package com.example.charts.ui.notifications
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.example.charts.R
 import com.example.charts.databinding.FragmentNotificationsBinding
-import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
-import com.github.aachartmodel.aainfographics.aachartcreator.AAChartType
-import com.github.aachartmodel.aainfographics.aachartcreator.AASeriesElement
-import com.github.aachartmodel.aainfographics.aaoptionsmodel.AAScrollablePlotArea
-import com.github.aachartmodel.aainfographics.aaoptionsmodel.AATooltip
+import com.example.charts.ui.dashboard.DashboardViewModel
+import com.example.charts.ui.home.HomeViewModel
+import com.example.charts.ui.home.base.BaseFragment
+import com.example.charts.ui.home.model.AddContactResponse
 
-class NotificationsFragment : Fragment() {
+class NotificationsFragment :
+    BaseFragment<FragmentNotificationsBinding, DashboardViewModel>(R.layout.fragment_notifications) {
+    override val binding by viewBinding(FragmentNotificationsBinding::bind)
 
-    private var _binding: FragmentNotificationsBinding? = null
+    override val viewModel: DashboardViewModel by viewModels()
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val notificationsViewModel =
-            ViewModelProvider(this).get(NotificationsViewModel::class.java)
-
-        _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        return root
+    private val previewContactsAdapter: PreviewContactsAdapter by lazy {
+        PreviewContactsAdapter(this::onItemClick)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private fun onItemClick(addContactResponse: AddContactResponse) {
 
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    override fun initialize() {
+        binding.recycler.adapter = previewContactsAdapter
+
     }
+
+    override fun launchObservers() {
+
+    }
+
 }

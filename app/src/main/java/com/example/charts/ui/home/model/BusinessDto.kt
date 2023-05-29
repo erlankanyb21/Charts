@@ -1,7 +1,5 @@
 package com.example.charts.ui.home.model
 
-import android.os.Parcel
-import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 
 data class BusinessDto(
@@ -17,17 +15,7 @@ data class BusinessDto(
     val userId: Int = 0,
     @SerializedName("view_count")
     val viewCount: List<ViewCount> = listOf()
-) : Parcelable {
-    constructor(parcel: Parcel) : this(
-        TODO("callCount"),
-        TODO("clickCount"),
-        TODO("messageCount"),
-        parcel.readInt(),
-        parcel.readInt(),
-        TODO("viewCount")
-    ) {
-    }
-
+) {
     data class CallCount(
         @SerializedName("count")
         val count: Int = 0,
@@ -55,23 +43,4 @@ data class BusinessDto(
         @SerializedName("date")
         val date: String = ""
     )
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(startDate)
-        parcel.writeInt(userId)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<BusinessDto> {
-        override fun createFromParcel(parcel: Parcel): BusinessDto {
-            return BusinessDto(parcel)
-        }
-
-        override fun newArray(size: Int): Array<BusinessDto?> {
-            return arrayOfNulls(size)
-        }
-    }
 }

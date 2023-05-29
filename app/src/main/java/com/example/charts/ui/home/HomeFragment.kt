@@ -3,12 +3,14 @@ package com.example.charts.ui.home
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.charts.R
 import com.example.charts.databinding.FragmentHomeBinding
+import com.example.charts.ui.home.base.BaseFragment
 import com.example.charts.ui.home.itemStats.ChartsFragment
 import com.example.charts.ui.home.model.BusinessDto
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -19,44 +21,45 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-class HomeFragment : Fragment(R.layout.fragment_home) {
+class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>(R.layout.fragment_home) {
 
-    private val binding by viewBinding(FragmentHomeBinding::bind)
+    override val binding by viewBinding(FragmentHomeBinding::bind)
 
-    private val viewModel by viewModels<HomeViewModel>()
+    override val viewModel by viewModels<HomeViewModel>()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        listeners()
-        observeStats()
+    override fun initialize() {
+        setupViewPager()
     }
 
-    private fun observeStats() {
-        viewModel.getStats().observe(viewLifecycleOwner) { businessDto ->
-            dataSet(businessDto)
-            binding.txtCount.text = "Последние ${businessDto.viewCount.size} дней"
-            binding.txtReset.isVisible = false
-        }
-    }
-
-    private fun listeners() {
+    override fun constructListeners() {
         binding.picker.setOnClickListener {
             setupdatepicker()
         }
         binding.txtReset.setOnClickListener {
-            observeStats()
             binding.txtCount.text = ""
             binding.txtReset.isVisible = false
         }
     }
 
-    private fun dataSet(businessDto: BusinessDto) {
+    override fun establishRequest() {
+        binding.txtReset.setOnClickListener {
+            Toast.makeText(requireContext(), "${it}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun setupViewPager() {
+
+        val dataForTab1 = listOf(1, 2, 3)
+        val dataForTab2 = listOf(4, 5, 6)
+        val dataForTab3 = listOf(7, 8, 9)
+        val dataForTab4 = listOf(7, 8, 9)
+
         val fragmentList = listOf(
-            businessDto.viewCount.map { it.count to it.date }.unzip(),
-            businessDto.callCount.map { it.count to it.date }.unzip(),
-            businessDto.messageCount.map { it.count to it.date }.unzip(),
-            businessDto.clickCount.map { it.count to it.date }.unzip()
-        ).map { (counts, dates) -> ChartsFragment.newInstance(counts, dates) }
+            ChartsFragment.newInstance(dataForTab1, listOf("Calls")),
+            ChartsFragment.newInstance(dataForTab2, listOf("Views")),
+            ChartsFragment.newInstance(dataForTab3, listOf("Clicks")),
+            ChartsFragment.newInstance(dataForTab4, listOf("Message")),
+        )
 
         val adapter = FragmentViewPagerAdapter(parentFragmentManager, lifecycle, fragmentList)
         binding.viewPager.adapter = adapter
@@ -79,23 +82,24 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         picker.show(parentFragmentManager, picker.toString())
         picker.addOnPositiveButtonClickListener { pair ->
-            viewModel.getStats(
-                (pair.first / 1000L).toString(), (pair.second / 1000L).toString()
-            ).observe(viewLifecycleOwner) { businessDto ->
-                dataSet(businessDto)
-                val start = convertMillisecondsToDate(pair.first, "dd MMMM")
-                val end = convertMillisecondsToDate(pair.second, "dd MMMM")
 
-                when {
-                    binding.txtCount.text.isEmpty() -> {
-                        binding.txtReset.isVisible = false
+            val start = convertMillisecondsToDate(pair.first, "dd MMMM")
+            val end = convertMillisecondsToDate(pair.second, "dd MMMM")
+
+            when {
+                binding.txtCount.text.isEmpty() -> {
+                    binding.txtReset.isVisible = false
+                }
+
+                else -> {
+                    binding.txtCount.text = "C ${start} - ${end}"
+                    binding.txtReset.setOnClickListener {
+                        Toast.makeText(requireContext(), "jopa", Toast.LENGTH_SHORT).show()
                     }
-                    else -> {
-                        binding.txtCount.text = "C ${start} - ${end}"
-                        binding.txtReset.isVisible = true
-                    }
+                    binding.txtReset.isVisible = true
                 }
             }
+
         }
     }
 

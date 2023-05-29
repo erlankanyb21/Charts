@@ -7,13 +7,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.charts.ui.home.api.ApiService
 import com.example.charts.ui.home.api.RetrofitClient
+import com.example.charts.ui.home.base.BaseViewModel
 import com.example.charts.ui.home.model.BusinessDto
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel : BaseViewModel() {
     private val apiService: ApiService by lazy {
         RetrofitClient.create()
     }
